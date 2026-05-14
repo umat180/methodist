@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Grace Methodist Church - Management System</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+#app{font-family:Georgia,serif;background:#f0f4f8;min-height:100vh;}
+.login-bg{min-height:100vh;background:linear-gradient(135deg,#0a2540,#1a3a5c);display:flex;align-items:center;justify-content:center;padding:1rem;}
+.login-box{background:white;border-radius:16px;padding:2rem;width:100%;max-width:380px;}
+.login-icon{text-align:center;margin-bottom:0.5rem;}
+.login-icon img{width:90px;height:90px;border-radius:12px;}
+.login-title{font-size:1.3rem;font-weight:700;color:#0a2540;text-align:center;}
+.login-sub{font-size:0.75rem;color:#888;text-align:center;margin-bottom:1rem;}
+.flabel{display:block;font-size:0.78rem;font-weight:700;color:#444;margin-bottom:0.3rem;margin-top:0.75rem;}
+.finput{width:100%;padding:0.55rem 0.8rem;border:1.5px solid #ddd;border-radius:8px;font-size:0.88rem;outline:none;}
+.finput:focus{border-color:#1a3a5c;}
+.btn-login{width:100%;margin-top:1rem;padding:0.7rem;background:#0a2540;color:white;border:none;border-radius:8px;font-size:0.9rem;font-weight:700;cursor:pointer;}
+.btn-login:hover{background:#1a3a5c;}
+.btn-link{background:none;border:none;color:#1a3a5c;font-size:0.78rem;cursor:pointer;text-decoration:underline;margin-top:0.75rem;display:block;text-align:center;}
+.login-err{background:#fdecea;color:#c0392b;border-radius:6px;padding:0.5rem 0.75rem;font-size:0.78rem;margin-top:0.6rem;display:none;}
+.topbar{background:#0a2540;color:white;padding:0.6rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar-logo{width:36px;height:36px;border-radius:8px;margin-right:10px;}
+.topbar-title{font-size:0.95rem;font-weight:700;}
+.topbar-sub{font-size:0.68rem;color:#aac4e0;}
+.btn-out{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:0.3rem 0.7rem;border-radius:6px;font-size:0.72rem;cursor:pointer;}
+.layout{display:flex;min-height:calc(100vh - 52px);}
+.sidebar{width:200px;background:white;border-right:1px solid #e0e6ed;overflow-y:auto;flex-shrink:0;}
+.nsec{padding:0.6rem 0.75rem 0.2rem;font-size:0.62rem;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:0.08em;}
+.nbtn{display:block;width:calc(100% - 8px);margin:1px 4px;text-align:left;padding:0.45rem 0.7rem;font-size:0.78rem;color:#444;background:none;border:none;cursor:pointer;border-radius:6px;}
+.nbtn:hover{background:#f0f4f8;color:#0a2540;}
+.nbtn.act{background:#e8f0fa;color:#0a2540;font-weight:700;border-left:3px solid #d4a017;}
+.gbtn{display:block;width:calc(100% - 8px);margin:1px 4px;text-align:left;padding:0.35rem 0.7rem;font-size:0.73rem;color:#555;background:none;border:none;cursor:pointer;border-radius:5px;}
+.gbtn:hover{background:#f5f7fa;}
+.gbtn.act{background:#fdf3dc;color:#7a5500;font-weight:700;border-left:3px solid #d4a017;}
+.main{flex:1;padding:1rem;overflow-y:auto;min-width:0;}
+.ph{background:linear-gradient(135deg,#0a2540,#1a3a5c);color:white;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem;}
+.ph h2{font-size:1.15rem;font-weight:700;}
+.ph p{font-size:0.75rem;color:#aac4e0;margin-top:0.2rem;}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:0.6rem;margin-bottom:1rem;}
+.scard{background:white;border-radius:8px;padding:0.75rem;border:1px solid #e0e6ed;}
+.slabel{font-size:0.68rem;color:#888;font-weight:700;}
+.sval{font-size:1.6rem;font-weight:700;margin-top:0.15rem;}
+.sv-blue{color:#1a3a5c;}.sv-green{color:#2e7d32;}.sv-amber{color:#b8860b;}.sv-red{color:#c0392b;}.sv-purple{color:#6a1b9a;}
+.card{background:white;border-radius:10px;border:1px solid #e0e6ed;margin-bottom:1rem;overflow:hidden;}
+.ch{padding:0.65rem 1rem;border-bottom:1px solid #e0e6ed;font-weight:700;font-size:0.82rem;color:#0a2540;display:flex;align-items:center;justify-content:space-between;}
+table{width:100%;border-collapse:collapse;font-size:0.78rem;}
+th{background:#f7f9fc;padding:0.5rem 0.7rem;text-align:left;font-size:0.68rem;font-weight:700;color:#666;border-bottom:1px solid #e0e6ed;}
+td{padding:0.5rem 0.7rem;border-bottom:1px solid #f0f3f6;color:#333;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#fafbfd;}
+.badge{display:inline-block;padding:0.18rem 0.45rem;border-radius:20px;font-size:0.65rem;font-weight:700;}
+.bg{background:#e8f5e9;color:#2e7d32;}.br{background:#fdecea;color:#c0392b;}
+.bb{background:#e3f0fb;color:#1a3a5c;}.ba{background:#fff8e1;color:#8a6000;}.bgr{background:#f0f0f0;color:#666;}
+.bpurple{background:#f3e5f5;color:#6a1b9a;}
+.btn-add{display:inline-flex;align-items:center;gap:0.3rem;padding:0.45rem 0.9rem;background:#0a2540;color:white;border:none;border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer;margin-bottom:0.75rem;}
+.btn-add:hover{background:#1a3a5c;}
+.btn-del{padding:0.28rem 0.55rem;background:#fdecea;color:#c0392b;border:none;border-radius:5px;font-size:0.7rem;font-weight:700;cursor:pointer;}
+.btn-del:hover{background:#ffcdd2;}
+.btn-edit{padding:0.28rem 0.55rem;background:#e3f0fb;color:#1a3a5c;border:none;border-radius:5px;font-size:0.7rem;font-weight:700;cursor:pointer;margin-right:0.3rem;}
+.btn-edit:hover{background:#bbdefb;}
+.att-row{display:flex;align-items:center;justify-content:space-between;padding:0.65rem 1rem;border-bottom:1px solid #f0f3f6;}
+.att-row:last-child{border-bottom:none;}
+.att-name{font-size:0.84rem;font-weight:700;color:#222;}
+.att-sub{font-size:0.7rem;color:#888;}
+.att-btns{display:flex;gap:0.4rem;}
+.abtn{padding:0.38rem 0.85rem;border:none;border-radius:6px;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.abtn-p{background:#e8f5e9;color:#2e7d32;border:1.5px solid #c8e6c9;}
+.abtn-p.on{background:#2e7d32;color:white;border-color:#2e7d32;}
+.abtn-a{background:#fdecea;color:#c0392b;border:1.5px solid #ffcdd2;}
+.abtn-a.on{background:#c0392b;color:white;border-color:#c0392b;}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-start;justify-content:center;z-index:200;padding:1.5rem 1rem;overflow-y:auto;}
+.modal{background:white;border-radius:14px;width:100%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
+.mh{padding:0.85rem 1.1rem;border-bottom:1px solid #e0e6ed;display:flex;justify-content:space-between;align-items:center;}
+.mh h3{font-size:0.95rem;font-weight:700;color:#0a2540;}
+.mcl{background:none;border:none;font-size:1.1rem;cursor:pointer;color:#888;}
+.mb{padding:1.1rem;}
+.cbgrp{max-height:150px;overflow-y:auto;border:1px solid #ddd;border-radius:8px;padding:0.4rem;}
+.cblbl{display:flex;align-items:center;gap:0.5rem;padding:0.22rem 0.25rem;font-size:0.77rem;cursor:pointer;}
+.cblbl:hover{background:#f5f7fa;border-radius:4px;}
+.alert-o{background:#fff8e6;border-left:4px solid #f59e0b;color:#78500a;border-radius:7px;padding:0.6rem 0.9rem;margin-bottom:0.75rem;font-size:0.78rem;}
+.alert-r{background:#fdecea;border-left:4px solid #e53935;color:#7a1515;border-radius:7px;padding:0.6rem 0.9rem;margin-bottom:0.75rem;font-size:0.78rem;}
+.alert-g{background:#e8f5e9;border-left:4px solid #2e7d32;color:#1b5e20;border-radius:7px;padding:0.6rem 0.9rem;margin-bottom:0.75rem;font-size:0.78rem;}
+.empty{text-align:center;padding:2rem;color:#aaa;font-size:0.82rem;}
+.date-row{display:flex;gap:0.75rem;align-items:flex-end;flex-wrap:wrap;margin-bottom:1rem;}
+.date-row label{font-size:0.75rem;font-weight:700;color:#555;display:block;margin-bottom:0.25rem;}
+.date-row input[type=date]{padding:0.4rem 0.6rem;border:1.5px solid #ddd;border-radius:7px;font-size:0.78rem;outline:none;}
+.btn-gen{padding:0.42rem 0.9rem;background:#0a2540;color:white;border:none;border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer;}
+.grp-card{padding:0.75rem 1rem;background:#f7f9fc;border:1px solid #e0e6ed;border-radius:8px;cursor:pointer;transition:all 0.15s;margin-bottom:0.5rem;display:flex;justify-content:space-between;align-items:center;}
+.grp-card:hover{background:#e8f0fa;border-color:#1a3a5c;}
+.grp-pill{display:inline-block;padding:0.13rem 0.4rem;background:#e3f0fb;color:#1a3a5c;border-radius:20px;font-size:0.62rem;font-weight:600;margin:1px;}
+.back-btn{display:inline-flex;align-items:center;gap:0.3rem;padding:0.35rem 0.75rem;background:#f0f4f8;color:#0a2540;border:1px solid #e0e6ed;border-radius:6px;font-size:0.75rem;font-weight:700;cursor:pointer;margin-bottom:0.75rem;}
+.back-btn:hover{background:#e0e6ed;}
+.srch{padding:0.4rem 0.7rem;border:1.5px solid #ddd;border-radius:7px;font-size:0.78rem;outline:none;}
+.srch:focus{border-color:#1a3a5c;}
+.divider{border:none;border-top:1px solid #e0e6ed;margin:1rem 0;}
+
+/* ===== UNAFFILIATED MEMBERS ===== */
+.unaff-card{background:white;border-radius:10px;border:2px dashed #d4a017;margin-bottom:0.75rem;overflow:hidden;transition:all 0.2s;}
+.unaff-header{background:linear-gradient(135deg,#7a5500,#d4a017);color:white;padding:0.7rem 1rem;display:flex;align-items:center;justify-content:space-between;}
+.unaff-name{font-weight:700;font-size:0.9rem;}
+.unaff-sub{font-size:0.7rem;opacity:0.85;}
+.unaff-badge{background:rgba(255,255,255,0.25);border-radius:20px;padding:0.15rem 0.5rem;font-size:0.65rem;font-weight:700;}
+.unaff-body{padding:0.75rem 1rem;}
+
+/* ===== FAMILY TREE ===== */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-15px);}to{opacity:1;transform:translateY(0);}}
+@keyframes popIn{from{opacity:0;transform:scale(0.7);}to{opacity:1;transform:scale(1);}}
+@keyframes drawLine{from{stroke-dashoffset:200;}to{stroke-dashoffset:0;}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(26,58,92,0.3);}50%{box-shadow:0 0 0 8px rgba(26,58,92,0);}}
+
+.family-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-top:1rem;}
+.family-card{background:white;border-radius:14px;border:1px solid #e0e6ed;overflow:hidden;transition:all 0.3s;animation:fadeInUp 0.5s ease both;}
+.family-card:hover{box-shadow:0 8px 30px rgba(10,37,64,0.12);transform:translateY(-2px);}
+.family-card-header{background:linear-gradient(135deg,#0a2540,#1a3a5c);padding:0.85rem 1rem;display:flex;align-items:center;gap:0.75rem;cursor:pointer;}
+.family-card-header:hover .family-expand-icon{transform:rotate(90deg);}
+.family-icon{width:38px;height:38px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.family-title{flex:1;}
+.family-name{font-weight:700;color:white;font-size:0.92rem;}
+.family-count{font-size:0.68rem;color:#aac4e0;margin-top:0.1rem;}
+.family-expand-icon{color:rgba(255,255,255,0.7);font-size:0.9rem;transition:transform 0.3s;}
+.family-tree-body{padding:1rem;display:none;}
+.family-tree-body.open{display:block;animation:fadeInDown 0.3s ease;}
+
+/* Tree structure */
+.tree-root{display:flex;flex-direction:column;align-items:center;}
+.couple-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;}
+.person-node{display:flex;flex-direction:column;align-items:center;gap:0.3rem;animation:popIn 0.4s ease both;}
+.person-node.husband{animation-delay:0.1s;}
+.person-node.wife{animation-delay:0.2s;}
+.person-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;position:relative;}
+.person-avatar.husband-av{background:linear-gradient(135deg,#1a3a5c,#2a5a8c);color:white;animation:pulse 2.5s ease infinite;}
+.person-avatar.wife-av{background:linear-gradient(135deg,#7a2050,#c0396e);color:white;animation:pulse 2.5s ease 0.5s infinite;}
+.person-label{font-size:0.7rem;font-weight:700;color:#333;text-align:center;max-width:80px;word-break:break-word;}
+.person-role{font-size:0.6rem;color:#888;text-align:center;}
+.couple-connector{display:flex;flex-direction:column;align-items:center;gap:0;margin:0 0.25rem;}
+.heart-icon{font-size:1rem;color:#e57373;animation:pulse 1.8s ease infinite;}
+.connector-line-h{width:40px;height:2px;background:linear-gradient(90deg,#1a3a5c,#c0396e);}
+.tree-connector{display:flex;flex-direction:column;align-items:center;margin-bottom:0.5rem;}
+.tree-trunk{width:2px;height:20px;background:#ccc;}
+.tree-branch{display:flex;align-items:flex-start;gap:0;}
+.branch-bar{height:2px;background:#ccc;min-width:20px;}
+.children-row{display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;}
+.child-node{display:flex;flex-direction:column;align-items:center;gap:0.3rem;animation:popIn 0.4s ease both;}
+.child-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#2e7d32,#43a047);color:white;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:700;}
+.child-label{font-size:0.65rem;font-weight:700;color:#333;text-align:center;max-width:70px;word-break:break-word;}
+.child-role{font-size:0.58rem;color:#888;}
+.no-children{font-size:0.72rem;color:#bbb;text-align:center;padding:0.5rem;font-style:italic;}
+
+/* Member search dropdown */
+.member-select-wrap{position:relative;}
+.member-dropdown{position:absolute;top:100%;left:0;right:0;background:white;border:1.5px solid #1a3a5c;border-top:none;border-radius:0 0 8px 8px;max-height:160px;overflow-y:auto;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.member-opt{padding:0.4rem 0.7rem;font-size:0.8rem;cursor:pointer;color:#333;}
+.member-opt:hover{background:#e8f0fa;}
+.children-input-area{border:1px solid #ddd;border-radius:8px;padding:0.6rem;margin-top:0.5rem;}
+.child-tag{display:inline-flex;align-items:center;gap:0.3rem;background:#e8f5e9;color:#2e7d32;border-radius:20px;padding:0.2rem 0.5rem;font-size:0.72rem;font-weight:600;margin:0.2rem;}
+.child-tag button{background:none;border:none;color:#2e7d32;cursor:pointer;font-size:0.8rem;line-height:1;padding:0;}
+.ftree-member-badge{display:inline-flex;align-items:center;gap:0.35rem;background:#f0f4f8;border:1px solid #ddd;border-radius:8px;padding:0.3rem 0.6rem;font-size:0.78rem;font-weight:600;color:#333;}
+.ftree-member-badge span{font-size:0.65rem;color:#888;font-weight:400;}
+</style>
+</head>
+<body>
+<div id="app">Loading...</div>
+<script>
+const GROUPS=['YOUTH FELLOWSHIP','MENS FELLOWSHIP','WOMENS FELLOWSHIP','CHURCH CHOIR','SINGING BAND','SUWMA','GUILD','CHRIST LITTLE BAND','GIRLS FELLOWSHIP'];
+const LOGO_URL = "data:image/webp;base64,UklGRqpMAABXRUJQVlA4IJ5MAADwHQGdASraAdoBPp1In0qlpCKhp/X60LATiWhu+/y2Ue0BqIn2S96P33927XuO/Ev4H+4/tv/iPd84v61PFH2X/Hf5/+w/uH934v2lPFH2X/Hf5/+w/uH930AAAADfg==";
+
+// Stored credentials
+let CREDS = {u:'methodist', p:'church1234'};
+try{ const c=localStorage.getItem('gmc_creds'); if(c){ const o=JSON.parse(atob(c)); CREDS=o; } }catch(e){}
+function saveCreds(){ try{ localStorage.setItem('gmc_creds', btoa(JSON.stringify(CREDS))); }catch(e){} }
+
+let S={
+  user:null, page:'dashboard', grp:null,
+  members:[], attendance:[],
+  unaffiliated:[], families:[],
+  modal:null, attDate:'',
+  familySearchH:'', familySearchW:'', familyChildren:[],
+  familyEditId:null,
+  openFamilies:{},
+  childSearchTerm:'', childSearchActive:false
+};
+S.attDate = today();
+
+async function load(){
+  try{
+    const [m,a,u,f]=await Promise.all([
+      window.storage.get('gmc_members',true).catch(()=>null),
+      window.storage.get('gmc_attendance',true).catch(()=>null),
+      window.storage.get('gmc_unaffiliated',true).catch(()=>null),
+      window.storage.get('gmc_families',true).catch(()=>null)
+    ]);
+    S.members=m?JSON.parse(m.value):[];
+    S.attendance=a?JSON.parse(a.value):[];
+    S.unaffiliated=u?JSON.parse(u.value):[];
+    S.families=f?JSON.parse(f.value):[];
+  }catch(e){S.members=[];S.attendance=[];S.unaffiliated=[];S.families=[];}
+  render();
+}
+async function saveM(){try{await window.storage.set('gmc_members',JSON.stringify(S.members),true);}catch(e){}}
+async function saveA(){try{await window.storage.set('gmc_attendance',JSON.stringify(S.attendance),true);}catch(e){}}
+async function saveU(){try{await window.storage.set('gmc_unaffiliated',JSON.stringify(S.unaffiliated),true);}catch(e){}}
+async function saveF(){try{await window.storage.set('gmc_families',JSON.stringify(S.families),true);}catch(e){}}
+
+function today(){return new Date().toISOString().split('T')[0];}
+function fmt(d){if(!d)return ''; const p=d.split('-'); return p[2]+'/'+p[1]+'/'+p[0];}
+function gm(grp){const g=grp||S.grp;return g?S.members.filter(m=>m.groups&&m.groups.includes(g)):[];}
+function getInitials(name){return name.trim().split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);}
+function allPeople(){
+  // All members + unaffiliated for family tree selection
+  const mems = S.members.map(m=>({id:'m_'+m.id,name:m.name,source:'member'}));
+  const unaff = S.unaffiliated.map(u=>({id:'u_'+u.id,name:u.name,source:'unaffiliated'}));
+  return [...mems,...unaff].sort((a,b)=>a.name.localeCompare(b.name));
+}
+
+// ===== AUTH =====
+function login(){
+  const u=document.getElementById('lu').value.trim();
+  const p=document.getElementById('lp').value;
+  const err=document.getElementById('lerr');
+  if(u===CREDS.u && p===CREDS.p){
+    S.user=true; S.page='dashboard'; render();
+  } else {
+    err.style.display='block';
+    err.textContent='Incorrect username or password.';
+  }
+}
+function logout(){S.user=null;S.page='login';S.grp=null;render();}
+function showChangePw(){document.getElementById('login-form').style.display='none';document.getElementById('changepw-form').style.display='block';}
+function hideChangePw(){document.getElementById('login-form').style.display='block';document.getElementById('changepw-form').style.display='none';document.getElementById('cpwerr').style.display='none';document.getElementById('cpwok').style.display='none';}
+function doChangePw(){
+  const ou=document.getElementById('cpu').value.trim();
+  const op=document.getElementById('cpp').value;
+  const np=document.getElementById('cpnp').value;
+  const cp=document.getElementById('cpcp').value;
+  const err=document.getElementById('cpwerr');
+  const ok=document.getElementById('cpwok');
+  err.style.display='none'; ok.style.display='none';
+  if(ou!==CREDS.u||op!==CREDS.p){err.textContent='Current username or password is wrong.';err.style.display='block';return;}
+  if(np.length<6){err.textContent='New password must be at least 6 characters.';err.style.display='block';return;}
+  if(np!==cp){err.textContent='New passwords do not match.';err.style.display='block';return;}
+  CREDS.p=np; saveCreds();
+  ok.style.display='block';
+  setTimeout(hideChangePw,1500);
+}
+
+// ===== NAV =====
+function nav(page,grp){S.page=page;if(grp!==undefined)S.grp=grp;render();}
+function closeModal(){S.modal=null;S.familyEditId=null;S.familyChildren=[];S.familySearchH='';S.familySearchW='';render();}
+function openAdd(){S.modal='add';render();}
+function openAddUnaffiliated(){S.modal='add-unaff';render();}
+function openAddFamily(){S.modal='add-family';S.familyEditId=null;S.familyChildren=[];S.familySearchH='';S.familySearchW='';render();}
+function openEditFamily(id){
+  S.modal='add-family';S.familyEditId=id;
+  const f=S.families.find(x=>x.id===id);
+  if(f){S.familyChildren=[...f.children];}
+  render();
+}
+
+// ===== MEMBERS =====
+function addMember(){
+  const n=document.getElementById('mn').value.trim();
+  const ph=document.getElementById('mph').value.trim();
+  if(!n){alert('Name is required');return;}
+  const gs=Array.from(document.querySelectorAll('.gcb:checked')).map(c=>c.value);
+  if(!gs.length){alert('Select at least one group');return;}
+  S.members.push({id:Date.now(),name:n,phone:ph,groups:gs,joined:today()});
+  saveM(); closeModal();
+}
+function delMember(id){
+  if(!confirm('Remove this member?'))return;
+  S.members=S.members.filter(m=>m.id!==id);
+  S.attendance=S.attendance.filter(a=>a.mid!==id);
+  saveM(); saveA(); render();
+}
+
+// ===== UNAFFILIATED =====
+function addUnaffiliated(){
+  const n=document.getElementById('un_name').value.trim();
+  const ph=document.getElementById('un_phone').value.trim();
+  const note=document.getElementById('un_note').value.trim();
+  if(!n){alert('Name is required');return;}
+  S.unaffiliated.push({id:Date.now(),name:n,phone:ph,note:note,joined:today()});
+  saveU(); closeModal();
+}
+function delUnaffiliated(id){
+  if(!confirm('Remove this person?'))return;
+  S.unaffiliated=S.unaffiliated.filter(u=>u.id!==id);
+  saveU(); render();
+}
+
+// ===== FAMILY TREE =====
+function familyPersonById(pid){
+  if(!pid) return null;
+  if(pid.startsWith('m_')){
+    const m=S.members.find(x=>'m_'+x.id===pid);
+    return m?{id:pid,name:m.name,source:'member'}:null;
+  }
+  if(pid.startsWith('u_')){
+    const u=S.unaffiliated.find(x=>'u_'+x.id===pid);
+    return u?{id:pid,name:u.name,source:'unaffiliated'}:null;
+  }
+  return null;
+}
+
+function saveFamily(){
+  const fname=document.getElementById('fam_name').value.trim();
+  const husbandId=document.getElementById('fam_husband_id').value;
+  const wifeId=document.getElementById('fam_wife_id').value;
+  if(!fname){alert('Family name is required');return;}
+  const fam={
+    id: S.familyEditId || Date.now(),
+    name: fname,
+    husbandId: husbandId||null,
+    husbandCustom: husbandId?'':(document.getElementById('fam_husband_custom')||{}).value||'',
+    wifeId: wifeId||null,
+    wifeCustom: wifeId?'':(document.getElementById('fam_wife_custom')||{}).value||'',
+    children: S.familyChildren||[],
+    created: today()
+  };
+  if(S.familyEditId){
+    const idx=S.families.findIndex(f=>f.id===S.familyEditId);
+    if(idx>=0) S.families[idx]=fam;
+  } else {
+    S.families.push(fam);
+  }
+  saveF(); closeModal();
+}
+
+function delFamily(id){
+  if(!confirm('Delete this family?'))return;
+  S.families=S.families.filter(f=>f.id!==id);
+  saveF(); render();
+}
+
+function toggleFamily(id){
+  S.openFamilies[id]=!S.openFamilies[id];
+  render();
+}
+
+function addChildToFamily(){
+  const cid=document.getElementById('fam_child_id').value;
+  const cname=(document.getElementById('fam_child_name')||{}).value||'';
+  if(cid){
+    if(S.familyChildren.find(c=>c.id===cid)){alert('Already added');return;}
+    const p=allPeople().find(x=>x.id===cid);
+    if(p) S.familyChildren=[...S.familyChildren,{id:cid,name:p.name}];
+  } else if(cname.trim()){
+    const temp='custom_'+Date.now();
+    S.familyChildren=[...S.familyChildren,{id:temp,name:cname.trim(),custom:true}];
+  } else {alert('Enter a name or select a member');return;}
+  render(); // re-render modal with updated children
+}
+
+function removeChild(idx){
+  S.familyChildren=S.familyChildren.filter((_,i)=>i!==idx);
+  render();
+}
+
+function setHusband(id,name){
+  document.getElementById('fam_husband_id').value=id;
+  document.getElementById('fam_husband_display').value=name;
+  const dd=document.getElementById('husband_dd');
+  if(dd) dd.style.display='none';
+}
+function setWife(id,name){
+  document.getElementById('fam_wife_id').value=id;
+  document.getElementById('fam_wife_display').value=name;
+  const dd=document.getElementById('wife_dd');
+  if(dd) dd.style.display='none';
+}
+function setChildSelect(id,name){
+  document.getElementById('fam_child_id').value=id;
+  document.getElementById('fam_child_name').value=name;
+  const dd=document.getElementById('child_dd');
+  if(dd) dd.style.display='none';
+}
+
+function searchPeopleDD(term, ddId, target){
+  const dd=document.getElementById(ddId);
+  if(!term||term.length<1){if(dd)dd.style.display='none';return;}
+  const people=allPeople().filter(p=>p.name.toLowerCase().includes(term.toLowerCase())).slice(0,10);
+  if(!people.length){if(dd)dd.style.display='none';return;}
+  dd.innerHTML=people.map(p=>`<div class="member-opt" onclick="${target}('${p.id}','${esc(p.name)}')">${esc(p.name)} <span style="color:#aaa;font-size:0.65rem;">(${p.source})</span></div>`).join('');
+  dd.style.display='block';
+}
+
+// ===== ATTENDANCE =====
+function setAttDate(d){S.attDate=d;render();}
+function markAtt(mid,status){
+  const date=S.attDate;
+  const idx=S.attendance.findIndex(a=>a.mid===mid&&a.date===date&&a.grp===S.grp);
+  if(idx>=0) S.attendance[idx].status=status;
+  else S.attendance.push({mid,date,grp:S.grp,status});
+  saveA(); render();
+}
+function getAtt(mid,date,grp){
+  const r=S.attendance.find(a=>a.mid===mid&&a.date===date&&a.grp===grp);
+  return r?r.status:'';
+}
+
+// ===== RENDER =====
+function render(){
+  const app=document.getElementById('app');
+  if(!S.user){app.innerHTML=rLogin();return;}
+  let main='';
+  switch(S.page){
+    case 'dashboard': main=rDashboard();break;
+    case 'members': main=rMembers();break;
+    case 'group-mem': main=rGroupMem();break;
+    case 'group-att': main=rGroupAtt();break;
+    case 'attendance': main=rAttendance();break;
+    case 'reports': main=rReports();break;
+    case 'unaffiliated': main=rUnaffiliated();break;
+    case 'family-tree': main=rFamilyTree();break;
+    default: main=rDashboard();
+  }
+  app.innerHTML=`
+    <div class="topbar">
+      <div style="display:flex;align-items:center;">
+        <img src="${LOGO_URL}" class="topbar-logo" alt="Logo" onerror="this.style.display='none'">
+        <div>
+          <div class="topbar-title">Grace Methodist Church</div>
+          <div class="topbar-sub">Deduako-Kodiekrom</div>
+        </div>
+      </div>
+      <button class="btn-out" onclick="logout()">Sign Out</button>
+    </div>
+    <div class="layout">${rSidebar()}<div class="main">${main}</div></div>
+    ${rModal()}`;
+}
+
+function rLogin(){return `
+  <div class="login-bg">
+    <div class="login-box">
+      <div class="login-icon"><img src="${LOGO_URL}" alt="Grace Methodist" onerror="this.style.display='none'"></div>
+      <div class="login-title">Grace Methodist Church</div>
+      <div class="login-sub">Deduako-Kodiekrom &middot; Management System</div>
+      <div id="login-form">
+        <label class="flabel">Username</label>
+        <input class="finput" id="lu" placeholder="Enter username" autocomplete="username"/>
+        <label class="flabel">Password</label>
+        <input class="finput" id="lp" type="password" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"/>
+        <div class="login-err" id="lerr"></div>
+        <button class="btn-login" onclick="login()">Sign In</button>
+        <button class="btn-link" onclick="showChangePw()">&#128274; Change Password</button>
+      </div>
+      <div id="changepw-form" style="display:none;">
+        <hr class="divider">
+        <div style="font-size:0.82rem;font-weight:700;color:#0a2540;margin-bottom:0.5rem;">&#128274; Change Password</div>
+        <label class="flabel">Current Username</label>
+        <input class="finput" id="cpu" placeholder="Username" autocomplete="username"/>
+        <label class="flabel">Current Password</label>
+        <input class="finput" id="cpp" type="password" placeholder="Current password" autocomplete="current-password"/>
+        <label class="flabel">New Password</label>
+        <input class="finput" id="cpnp" type="password" placeholder="New password (min 6 chars)" autocomplete="new-password"/>
+        <label class="flabel">Confirm New Password</label>
+        <input class="finput" id="cpcp" type="password" placeholder="Confirm new password" autocomplete="new-password"/>
+        <div class="login-err" id="cpwerr" style="display:none;"></div>
+        <div class="alert-g" id="cpwok" style="display:none;">&#10003; Password changed successfully!</div>
+        <button class="btn-login" onclick="doChangePw()">Update Password</button>
+        <button class="btn-link" onclick="hideChangePw()">&larr; Back to Login</button>
+      </div>
+    </div>
+  </div>`;}
+
+function rSidebar(){
+  const p=S.page,g=S.grp;
+  const nb=(page,grp,label)=>{
+    const active=(p===page&&(grp===undefined||g===grp))?'act':'';
+    const grpArg=grp!==undefined?`'${grp}'`:'';
+    const call=grpArg?`nav('${page}',${grpArg})`:`nav('${page}')`;
+    return `<button class="nbtn ${active}" onclick="${call}">${label}</button>`;
+  };
+  const gb=(grp)=>{
+    const active=(p==='group-mem'&&g===grp||p==='group-att'&&g===grp)?'act':'';
+    return `<button class="gbtn ${active}" onclick="nav('group-mem','${grp}')">${grp}</button>`;
+  };
+  return `<div class="sidebar">
+    <div class="nsec">Main</div>
+    ${nb('dashboard',undefined,'&#9642; Dashboard')}
+    ${nb('members',undefined,'&#9642; All Members')}
+    ${nb('unaffiliated',undefined,'&#9642; Unaffiliated')}
+    ${nb('family-tree',undefined,'&#9642; Family Tree')}
+    ${nb('attendance',undefined,'&#9642; Take Attendance')}
+    ${nb('reports',undefined,'&#9642; Reports')}
+    <div class="nsec">Groups</div>
+    ${GROUPS.map(gb).join('')}
+  </div>`;}
+
+function rDashboard(){
+  const total=S.members.length;
+  const unaff=S.unaffiliated.length;
+  const famCount=S.families.length;
+  const todayStr=today();
+  const todayAtt=S.attendance.filter(a=>a.date===todayStr);
+  const present=todayAtt.filter(a=>a.status==='P').length;
+  const absent=todayAtt.filter(a=>a.status==='A').length;
+  const grpSizes=GROUPS.map(g=>({g,c:gm(g).length})).sort((a,b)=>b.c-a.c);
+  return `
+    <div class="ph"><h2>&#9962; Dashboard</h2><p>Welcome back &mdash; ${new Date().toDateString()}</p></div>
+    <div class="grid4">
+      <div class="scard"><div class="slabel">TOTAL MEMBERS</div><div class="sval sv-blue">${total}</div></div>
+      <div class="scard"><div class="slabel">PRESENT TODAY</div><div class="sval sv-green">${present}</div></div>
+      <div class="scard"><div class="slabel">ABSENT TODAY</div><div class="sval sv-red">${absent}</div></div>
+      <div class="scard"><div class="slabel">GROUPS</div><div class="sval sv-amber">${GROUPS.length}</div></div>
+      <div class="scard"><div class="slabel">UNAFFILIATED</div><div class="sval sv-amber">${unaff}</div></div>
+      <div class="scard"><div class="slabel">FAMILIES</div><div class="sval sv-purple">${famCount}</div></div>
+    </div>
+    <div class="card">
+      <div class="ch">Group Membership Overview</div>
+      <table><thead><tr><th>Group</th><th>Members</th></tr></thead><tbody>
+      ${grpSizes.map(({g,c})=>`<tr><td><button class="btn-link" style="font-size:0.78rem;font-weight:600;" onclick="nav('group-mem','${g}')">${g}</button></td><td><span class="badge bb">${c}</span></td></tr>`).join('')}
+      </tbody></table>
+    </div>`;}
+
+function rMembers(){
+  const srch=(document.getElementById('msrch')||{}).value||'';
+  const filtered=S.members.filter(m=>m.name.toLowerCase().includes(srch.toLowerCase())||m.phone&&m.phone.includes(srch));
+  return `
+    <div class="ph"><h2>&#128101; All Members</h2><p>${S.members.length} registered member${S.members.length!==1?'s':''}</p></div>
+    <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.75rem;flex-wrap:wrap;">
+      <button class="btn-add" onclick="openAdd()">&#43; Add Member</button>
+      <input class="srch" id="msrch" placeholder="Search name or phone..." oninput="render()" value="${srch}">
+    </div>
+    <div class="card">
+      <table><thead><tr><th>#</th><th>Name</th><th>Phone</th><th>Groups</th><th>Joined</th><th></th></tr></thead><tbody>
+      ${filtered.length?filtered.map((m,i)=>`<tr>
+        <td>${i+1}</td>
+        <td style="font-weight:700;">${esc(m.name)}</td>
+        <td>${esc(m.phone||'—')}</td>
+        <td>${(m.groups||[]).map(g=>`<span class="grp-pill">${g}</span>`).join('')||'—'}</td>
+        <td>${fmt(m.joined)}</td>
+        <td><button class="btn-del" onclick="delMember(${m.id})">Remove</button></td>
+      </tr>`).join(''): '<tr><td colspan="6" class="empty">No members found</td></tr>'}
+      </tbody></table>
+    </div>`;}
+
+function rGroupMem(){
+  const members=gm();
+  return `
+    <button class="back-btn" onclick="nav('dashboard')">&larr; Dashboard</button>
+    <div class="ph"><h2>&#128101; ${S.grp}</h2><p>${members.length} member${members.length!==1?'s':''}</p></div>
+    <div style="margin-bottom:0.75rem;display:flex;gap:0.5rem;">
+      <button class="btn-add" onclick="openAdd()">&#43; Add Member</button>
+      <button class="btn-gen" onclick="nav('group-att',S.grp)">&#128203; Take Attendance</button>
+    </div>
+    <div class="card">
+      <table><thead><tr><th>#</th><th>Name</th><th>Phone</th><th>Joined</th><th></th></tr></thead><tbody>
+      ${members.length?members.map((m,i)=>`<tr>
+        <td>${i+1}</td>
+        <td style="font-weight:700;">${esc(m.name)}</td>
+        <td>${esc(m.phone||'—')}</td>
+        <td>${fmt(m.joined)}</td>
+        <td><button class="btn-del" onclick="delMember(${m.id})">Remove</button></td>
+      </tr>`).join(''):`<tr><td colspan="5" class="empty">No members in this group yet.<br><button class="btn-add" style="margin-top:0.5rem;" onclick="openAdd()">Add Member</button></td></tr>`}
+      </tbody></table>
+    </div>`;}
+
+function rGroupAtt(){
+  const members=gm();
+  const date=S.attDate||today();
+  const pCount=members.filter(m=>getAtt(m.id,date,S.grp)==='P').length;
+  const aCount=members.filter(m=>getAtt(m.id,date,S.grp)==='A').length;
+  return `
+    <button class="back-btn" onclick="nav('group-mem',S.grp)">&larr; ${S.grp}</button>
+    <div class="ph"><h2>&#128203; Attendance &mdash; ${S.grp}</h2><p>${fmt(date)} &middot; Present: ${pCount} &middot; Absent: ${aCount}</p></div>
+    <div class="date-row">
+      <div><label>Date</label><input type="date" value="${date}" onchange="setAttDate(this.value)" max="${today()}"></div>
+    </div>
+    ${members.length===0?'<div class="empty">No members in this group.</div>':'<div class="card">'+members.map(m=>{
+      const st=getAtt(m.id,date,S.grp);
+      return `<div class="att-row">
+        <div><div class="att-name">${esc(m.name)}</div><div class="att-sub">${m.phone||''}</div></div>
+        <div class="att-btns">
+          <button class="abtn abtn-p ${st==='P'?'on ':'' }" onclick="markAtt(${m.id},'P')">Present</button>
+          <button class="abtn abtn-a ${st==='A'?'on ':'' }" onclick="markAtt(${m.id},'A')">Absent</button>
+        </div>
+      </div>`;
+    }).join('')+'</div>'}
+  `;}
+
+function rAttendance(){
+  const date=S.attDate||today();
+  return `
+    <div class="ph"><h2>&#128203; Attendance Overview</h2><p>Select a group to take attendance</p></div>
+    <div class="date-row">
+      <div><label>Date</label><input type="date" value="${date}" onchange="setAttDate(this.value)" max="${today()}"></div>
+    </div>
+    <div>
+    ${GROUPS.map(g=>{
+      const members=gm(g);
+      const pCount=members.filter(m=>getAtt(m.id,date,g)==='P').length;
+      const aCount=members.filter(m=>getAtt(m.id,date,g)==='A').length;
+      const unmarked=members.length-pCount-aCount;
+      return `<div class="grp-card" onclick="nav('group-att','${g}')">
+        <div>
+          <div style="font-weight:700;font-size:0.84rem;">${g}</div>
+          <div style="font-size:0.7rem;color:#888;margin-top:0.2rem;">${members.length} members</div>
+        </div>
+        <div style="display:flex;gap:0.4rem;align-items:center;">
+          ${pCount?`<span class="badge bg">P:${pCount}</span>`:''}
+          ${aCount?`<span class="badge br">A:${aCount}</span>`:''}
+          ${unmarked?`<span class="badge bgr">${unmarked} pending</span>`:''}
+          <span style="color:#aaa;font-size:1rem;">&rsaquo;</span>
+        </div>
+      </div>`;
+    }).join('')}
+    </div>`;}
+
+function rReports(){
+  const from=document.getElementById('rfrom')?document.getElementById('rfrom').value:'';
+  const to=document.getElementById('rto')?document.getElementById('rto').value:'';
+  let rows='';
+  if(from&&to){
+    GROUPS.forEach(g=>{
+      const members=gm(g);
+      members.forEach(m=>{
+        const attRecs=S.attendance.filter(a=>a.mid===m.id&&a.grp===g&&a.date>=from&&a.date<=to);
+        const p=attRecs.filter(a=>a.status==='P').length;
+        const a=attRecs.filter(a=>a.status==='A').length;
+        if(p+a>0) rows+=`<tr><td style="font-weight:700;">${esc(m.name)}</td><td>${g}</td><td><span class="badge bg">${p}</span></td><td><span class="badge br">${a}</span></td><td>${p+a}</td></tr>`;
+      });
+    });
+  }
+  return `
+    <div class="ph"><h2>&#128196; Reports</h2><p>Attendance summary by date range</p></div>
+    <div class="date-row">
+      <div><label>From</label><input type="date" id="rfrom" value="${from}" oninput="render()"></div>
+      <div><label>To</label><input type="date" id="rto" value="${to}" oninput="render()"></div>
+    </div>
+    ${from&&to?`<div class="card"><table><thead><tr><th>Member</th><th>Group</th><th>Present</th><th>Absent</th><th>Total Days</th></tr></thead><tbody>
+      ${rows||'<tr><td colspan="5" class="empty">No attendance records in this range</td></tr>'}
+    </tbody></table></div>`:`<div class="alert-o">Select a date range above to generate the report.</div>`}`;}
+
+// ===== UNAFFILIATED PAGE =====
+function rUnaffiliated(){
+  const list=S.unaffiliated;
+  return `
+    <div class="ph">
+      <h2>&#128100; Unaffiliated Members</h2>
+      <p>Church members not currently in any organizational group</p>
+    </div>
+    <div class="alert-o" style="margin-bottom:0.75rem;">&#128161; These are people who attend Grace Methodist Church but have not been placed into any fellowship group yet.</div>
+    <button class="btn-add" onclick="openAddUnaffiliated()">&#43; Add Unaffiliated Member</button>
+    ${list.length===0?`<div class="card"><div class="empty">&#128100;<br>No unaffiliated members recorded yet.<br><small>Add people who attend church but are not in any group.</small></div></div>`:''}
+    ${list.map((u,i)=>`
+      <div class="unaff-card" style="animation:fadeInUp 0.4s ease ${i*0.07}s both;">
+        <div class="unaff-header">
+          <div style="width:42px;height:42px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0;">${getInitials(u.name)}</div>
+          <div style="flex:1;margin-left:0.75rem;">
+            <div class="unaff-name">${esc(u.name)}</div>
+            <div class="unaff-sub">${u.phone?'📞 '+esc(u.phone):'No phone'} &middot; Joined: ${fmt(u.joined)}</div>
+          </div>
+          <span class="unaff-badge">Unaffiliated</span>
+        </div>
+        ${u.note?`<div class="unaff-body"><div style="font-size:0.75rem;color:#555;"><b>Note:</b> ${esc(u.note)}</div></div>`:''}
+        <div style="padding:0.5rem 1rem;display:flex;gap:0.4rem;justify-content:flex-end;border-top:1px solid #f5e8c0;">
+          <button class="btn-del" onclick="delUnaffiliated(${u.id})">Remove</button>
+        </div>
+      </div>
+    `).join('')}
+  `;}
+
+// ===== FAMILY TREE PAGE =====
+function rFamilyTree(){
+  const families=S.families;
+  return `
+    <div class="ph">
+      <h2>&#127968; Family Tree</h2>
+      <p>Track church families &mdash; husband, wife & children</p>
+    </div>
+    <button class="btn-add" onclick="openAddFamily()">&#43; Add Family</button>
+    ${families.length===0?`<div class="card"><div class="empty">&#127968;<br>No families recorded yet.<br><small>Add a family to see their animated tree here.</small></div></div>`:''}
+    <div class="family-grid">
+    ${families.map((f,fi)=>{
+      const husband=f.husbandId?familyPersonById(f.husbandId):null;
+      const wife=f.wifeId?familyPersonById(f.wifeId):null;
+      const husbandName=husband?husband.name:(f.husbandCustom||'');
+      const wifeName=wife?wife.name:(f.wifeCustom||'');
+      const children=f.children||[];
+      const isOpen=!!S.openFamilies[f.id];
+      const delay=fi*0.08;
+
+      const husbandNode=husbandName?`<div class="person-node husband">
+        <div class="person-avatar husband-av">${getInitials(husbandName)}</div>
+        <div class="person-label">${esc(husbandName)}</div>
+        <div class="person-role">👨 Husband</div>
+        ${husband&&husband.source?`<span class="badge bb" style="font-size:0.55rem;padding:0.1rem 0.3rem;">${husband.source}</span>`:''}
+      </div>`:'';
+      const wifeNode=wifeName?`<div class="person-node wife">
+        <div class="person-avatar wife-av">${getInitials(wifeName)}</div>
+        <div class="person-label">${esc(wifeName)}</div>
+        <div class="person-role">👩 Wife</div>
+        ${wife&&wife.source?`<span class="badge" style="background:#fce4ec;color:#880e4f;font-size:0.55rem;padding:0.1rem 0.3rem;">${wife.source}</span>`:''}
+      </div>`:'';
+
+      const childNodes=children.map((c,ci)=>`
+        <div class="child-node" style="animation-delay:${0.3+ci*0.1}s;">
+          <div class="child-avatar">${getInitials(c.name)}</div>
+          <div class="child-label">${esc(c.name)}</div>
+          <div class="child-role">👶 Child</div>
+        </div>
+      `).join('');
+
+      const branchBarW=children.length>1?`${(children.length-1)*55}px`:'0';
+
+      return `<div class="family-card" style="animation-delay:${delay}s;">
+        <div class="family-card-header" onclick="toggleFamily(${f.id})">
+          <div class="family-icon">&#127968;</div>
+          <div class="family-title">
+            <div class="family-name">${esc(f.name)} Family</div>
+            <div class="family-count">${[husbandName,wifeName].filter(Boolean).join(' & ')||'No parents set'} &middot; ${children.length} child${children.length!==1?'ren':''}</div>
+          </div>
+          <span class="family-expand-icon" style="transform:${isOpen?'rotate(90deg)':'rotate(0deg)'};">&#9658;</span>
+        </div>
+        <div class="family-tree-body ${isOpen?'open':''}">
+          <div class="tree-root">
+            <!-- Parents row -->
+            ${(husbandName||wifeName)?`<div class="couple-row">
+              ${husbandNode}
+              ${(husbandName&&wifeName)?`<div class="couple-connector"><div class="connector-line-h"></div><div class="heart-icon">&#10084;</div><div class="connector-line-h"></div></div>`:''}
+              ${wifeNode}
+            </div>`:'<div style="text-align:center;color:#bbb;font-size:0.75rem;padding:0.5rem;">No parents recorded</div>'}
+            <!-- Trunk down to children -->
+            ${children.length>0?`<div class="tree-connector">
+              <div class="tree-trunk"></div>
+              <div class="tree-branch">
+                ${children.length>1?`<div class="branch-bar" style="width:${branchBarW};margin-top:0;"></div>`:''}
+              </div>
+            </div>
+            <div class="children-row">${childNodes}</div>`:`<div class="no-children">No children recorded</div>`}
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:0.4rem;margin-top:1rem;padding-top:0.75rem;border-top:1px solid #f0f3f6;">
+            <button class="btn-edit" onclick="openEditFamily(${f.id})">&#9998; Edit</button>
+            <button class="btn-del" onclick="delFamily(${f.id})">&#128465; Delete</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('')}
+    </div>
+  `;}
+
+// ===== MODALS =====
+function rModal(){
+  if(!S.modal) return '';
+  if(S.modal==='add') return rModalAddMember();
+  if(S.modal==='add-unaff') return rModalAddUnaffiliated();
+  if(S.modal==='add-family') return rModalAddFamily();
+  return '';
+}
+
+function rModalAddMember(){
+  const grpChecks=GROUPS.map(g=>`<label class="cblbl"><input type="checkbox" class="gcb" value="${g}"> ${g}</label>`).join('');
+  return `<div class="modal-ov" onclick="if(event.target.classList.contains('modal-ov'))closeModal()">
+    <div class="modal">
+      <div class="mh"><h3>Add New Member</h3><button class="mcl" onclick="closeModal()">&#10005;</button></div>
+      <div class="mb">
+        <label class="flabel">Full Name *</label>
+        <input class="finput" id="mn" placeholder="Enter full name" autocomplete="off"/>
+        <label class="flabel">Phone Number</label>
+        <input class="finput" id="mph" placeholder="e.g. 0241234567" autocomplete="off"/>
+        <label class="flabel">Groups *</label>
+        <div class="cbgrp">${grpChecks}</div>
+        ${S.grp?`<script>setTimeout(()=>{document.querySelectorAll('.gcb').forEach(c=>{if(c.value==='${S.grp}')c.checked=true;});},10)<\/script>`:''}
+        <button class="btn-add" style="margin-top:1rem;width:100%;justify-content:center;" onclick="addMember()">&#43; Add Member</button>
+      </div>
+    </div>
+  </div>`;}
+
+function rModalAddUnaffiliated(){
+  return `<div class="modal-ov" onclick="if(event.target.classList.contains('modal-ov'))closeModal()">
+    <div class="modal">
+      <div class="mh"><h3>&#128100; Add Unaffiliated Member</h3><button class="mcl" onclick="closeModal()">&#10005;</button></div>
+      <div class="mb">
+        <div class="alert-o">This person attends church but is not yet in any group.</div>
+        <label class="flabel">Full Name *</label>
+        <input class="finput" id="un_name" placeholder="Enter full name" autocomplete="off"/>
+        <label class="flabel">Phone Number</label>
+        <input class="finput" id="un_phone" placeholder="e.g. 0241234567" autocomplete="off"/>
+        <label class="flabel">Note (optional)</label>
+        <input class="finput" id="un_note" placeholder="e.g. New visitor, interested in choir..." autocomplete="off"/>
+        <button class="btn-add" style="margin-top:1rem;width:100%;justify-content:center;" onclick="addUnaffiliated()">&#43; Add Person</button>
+      </div>
+    </div>
+  </div>`;}
+
+function rModalAddFamily(){
+  const isEdit=!!S.familyEditId;
+  const existing=isEdit?S.families.find(f=>f.id===S.familyEditId):null;
+  const husbandName=isEdit&&existing?(existing.husbandId?familyPersonById(existing.husbandId)?.name||existing.husbandCustom:existing.husbandCustom):'';
+  const wifeName=isEdit&&existing?(existing.wifeId?familyPersonById(existing.wifeId)?.name||existing.wifeCustom:existing.wifeCustom):'';
+  const husbandId=isEdit&&existing?existing.husbandId||'':'';
+  const wifeId=isEdit&&existing?existing.wifeId||'':'';
+  const childrenHtml=S.familyChildren.map((c,i)=>`<span class="child-tag">&#128100; ${esc(c.name)}<button onclick="removeChild(${i})">&#10005;</button></span>`).join('');
+
+  return `<div class="modal-ov" onclick="if(event.target.classList.contains('modal-ov'))closeModal()">
+    <div class="modal" style="max-width:520px;">
+      <div class="mh"><h3>&#127968; ${isEdit?'Edit':'Add'} Family</h3><button class="mcl" onclick="closeModal()">&#10005;</button></div>
+      <div class="mb">
+        <label class="flabel">Family Name *</label>
+        <input class="finput" id="fam_name" placeholder="e.g. Asante, Mensah, Boateng..." value="${isEdit&&existing?esc(existing.name):''}" autocomplete="off"/>
+
+        <label class="flabel">Husband</label>
+        <div class="member-select-wrap">
+          <input class="finput" id="fam_husband_display" placeholder="Search member or type custom name..." value="${esc(husbandName)}" oninput="searchPeopleDD(this.value,'husband_dd','setHusband')" autocomplete="off"/>
+          <input type="hidden" id="fam_husband_id" value="${husbandId}"/>
+          <div id="husband_dd" class="member-dropdown" style="display:none;"></div>
+        </div>
+        <div style="font-size:0.7rem;color:#888;margin-top:0.2rem;">Type to search registered members, or enter a custom name directly</div>
+
+        <label class="flabel">Wife</label>
+        <div class="member-select-wrap">
+          <input class="finput" id="fam_wife_display" placeholder="Search member or type custom name..." value="${esc(wifeName)}" oninput="searchPeopleDD(this.value,'wife_dd','setWife')" autocomplete="off"/>
+          <input type="hidden" id="fam_wife_id" value="${wifeId}"/>
+          <div id="wife_dd" class="member-dropdown" style="display:none;"></div>
+        </div>
+
+        <label class="flabel">Children</label>
+        <div class="children-input-area">
+          ${childrenHtml||'<div style="font-size:0.72rem;color:#bbb;margin-bottom:0.4rem;">No children added yet</div>'}
+          <div style="display:flex;gap:0.4rem;margin-top:0.5rem;align-items:center;">
+            <div class="member-select-wrap" style="flex:1;">
+              <input class="finput" id="fam_child_name" placeholder="Search or type child name..." oninput="searchPeopleDD(this.value,'child_dd','setChildSelect')" autocomplete="off" style="font-size:0.78rem;"/>
+              <input type="hidden" id="fam_child_id" value=""/>
+              <div id="child_dd" class="member-dropdown" style="display:none;"></div>
+            </div>
+            <button class="btn-gen" onclick="addChildToFamily()" style="white-space:nowrap;">&#43; Add</button>
+          </div>
+        </div>
+
+        <button class="btn-add" style="margin-top:1rem;width:100%;justify-content:center;" onclick="saveFamily()">&#127968; ${isEdit?'Update':'Save'} Family</button>
+      </div>
+    </div>
+  </div>`;}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+load();
+</script>
+</body>
+</html>
